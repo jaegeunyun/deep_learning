@@ -98,7 +98,7 @@ km_predict_result = km_predict.predict(test_data)
 print(km_predict_result)
 
 ####------------------- # of cluster ----------------------
-###import numpy as np
+import numpy as np
 ###from sklearn.metrics import silhouette_score
 ###test_data = np.array(user_product_vec_li)
 ###for k in range(2,9):
@@ -154,14 +154,25 @@ def analyze_clusters_product_count(labels, user_product_dic, id_user_dic):
 from scipy.cluster.hierarchy import linkage
 from scipy.cluster.hierarchy import dendrogram
 
-row_clusters = linkage(test_data, method='complete', metric='euclidean')
-tmp_label=[]
-for i in range(len(id_user_dic)):
-  tmp_label.append(id_user_dic[i])
+###row_clusters = linkage(test_data, method='complete', metric='euclidean')
+###tmp_label=[]
+###for i in range(len(id_user_dic)):
+###  tmp_label.append(id_user_dic[i])
+###
+###row_denr = dendrogram(row_clusters, labels=tmp_label)
+###plt.tight_layout()
+###plt.ylabel('euclid')
+###plt.show()
 
-row_denr = dendrogram(row_clusters, labels=tmp_label)
-plt.tight_layout()
-plt.ylabel('euclid')
-plt.show()
+###small_test_data = np.array(random.sample(user_product_vec_li, 10))
+###small_row_clusters = linkage(small_test_data, method="complete", metric="euclidean")
+###plt.figure(figsize=(25,10))
+###row_denr = dendrogram(small_row_clusters, labels=list(range(len(small_test_data))), leaf_font_size=20.)
+###
+###plt.ylabel("eudlid")
+###plt.show()
 
-
+from sklearn.cluster import AgglomerativeClustering
+ward = AgglomerativeClustering(n_clusters=2, affinity='euclidean', linkage='ward')
+ward.fit(test_data)
+analyze_cluster_keywords(ward.labels_, product_id_name_dic, user_product_dic, id_user_dic)
