@@ -81,6 +81,39 @@ for user_code, product_per_user_set in user_product_dic.items():
   user_product_vec_li.append(user_product_vec)
 print(id_user_dic[0])
 print(user_product_dic[id_user_dic[0]])
-print(user_product_vec_li[0])
+#print(user_product_vec_li[0])
 print(len(user_product_vec_li[0]))
 
+#------------------- k-means clustering ----------------------
+from sklearn.cluster import KMeans
+import random
+from random import shuffle
+
+random.shuffle(user_product_vec_li)
+train_data = user_product_vec_li[:2500]
+test_data = user_product_vec_li[2500:]
+print("#of train data:%d, #of test data:%d" % (len(train_data), len(test_data)))
+km_predict = KMeans(n_clusters=4, init='k-means++', n_init=10, max_iter=20).fit(train_data)
+km_predict_result = km_predict.predict(test_data)
+print(km_predict_result)
+
+#------------------- # of cluster ----------------------
+import numpy as np
+from sklearn.metrics import silhouette_score
+test_data = np.array(user_product_vec_li)
+for k in range(2,9):
+  km = KMeans(n_clusters=k).fit(test_data)
+  print("score for %d clusters:%.3f" % (k, silhouette_score(test_data, km.labels_)))
+
+#------------------- within sum of squares ----------------------
+ssw_dic = {}
+for k in range(1,8):
+  km = KMeans(n_clusters=4).fit(test_data)
+  ssw_dic[k] = km.inertia_
+
+plot_data_x = list(ssw_dic.keys())
+plot_data_y = list(ssw_dic.values())
+plt.xlabel("# of clusters")
+plt.ylabel("within ss")
+plt.plot(plot_data_x, plot_data_y, linestyle="-", marker="o")
+plt.show()
