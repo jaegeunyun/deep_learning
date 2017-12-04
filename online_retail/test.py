@@ -97,23 +97,57 @@ km_predict = KMeans(n_clusters=4, init='k-means++', n_init=10, max_iter=20).fit(
 km_predict_result = km_predict.predict(test_data)
 print(km_predict_result)
 
-#------------------- # of cluster ----------------------
-import numpy as np
-from sklearn.metrics import silhouette_score
-test_data = np.array(user_product_vec_li)
-for k in range(2,9):
-  km = KMeans(n_clusters=k).fit(test_data)
-  print("score for %d clusters:%.3f" % (k, silhouette_score(test_data, km.labels_)))
+####------------------- # of cluster ----------------------
+###import numpy as np
+###from sklearn.metrics import silhouette_score
+###test_data = np.array(user_product_vec_li)
+###for k in range(2,9):
+###  km = KMeans(n_clusters=k).fit(test_data)
+###  print("score for %d clusters:%.3f" % (k, silhouette_score(test_data, km.labels_)))
 
-#------------------- within sum of squares ----------------------
-ssw_dic = {}
-for k in range(1,8):
-  km = KMeans(n_clusters=4).fit(test_data)
-  ssw_dic[k] = km.inertia_
+####------------------- within sum of squares ----------------------
+###ssw_dic = {}
+###for k in range(1,8):
+###  km = KMeans(n_clusters=4).fit(test_data)
+###  ssw_dic[k] = km.inertia_
+###
+###plot_data_x = list(ssw_dic.keys())
+###plot_data_y = list(ssw_dic.values())
+###plt.xlabel("# of clusters")
+###plt.ylabel("within ss")
+###plt.plot(plot_data_x, plot_data_y, linestyle="-", marker="o")
+###plt.show()
 
-plot_data_x = list(ssw_dic.keys())
-plot_data_y = list(ssw_dic.values())
-plt.xlabel("# of clusters")
-plt.ylabel("within ss")
-plt.plot(plot_data_x, plot_data_y, linestyle="-", marker="o")
-plt.show()
+#------------------- analyze_cluster_keywords ----------------------
+from collections import Counter
+def analyze_cluster_keywords(labels, product_id_name_dic, user_product_dic, id_user_dic):
+  print(Counter(labels))
+  cluster_item = {}
+  for i in range(len(labels)):
+    cluster_item.setdefault(labels[i], [])
+    print('1:', labels)
+    #print('2:', product_id_name_dic)
+    #cluster_item[labels[i]].extend([product_id_name_dic[i]])
+  for x in user_product_dic[id_user_dic[i]]:
+    for cluster_id, product_name in cluster_item.items():
+      bigram = []
+      product_name_keyword = (' ').join(product_name).replace(' OF ', ' ').split()
+      for i in range(0,len(product_name_keyword) -1):
+        bigram.append(' '.join(product_name_keyword[i:i+2]))
+      print('cluster_id:', cluster_id)
+      print(Counter(bigram).most_common(20))
+
+def analyze_clusters_product_count(labels, user_product_dic, id_user_dic):
+  product_len_dic = {}
+  for i in range(0, len(labels)):
+    product_len_dic.setdefault(labels[i], [])
+    product_len_dic[labels[i]].append(len(user_product_dic[id_user_dic[i]]))
+  for k,v in product_len_dic.items():
+    print('cluster:', k)
+    print(stats.describe(v))
+
+km=KMeans(n_clusters=2, n_init=10, max_iter=20)
+km.fit(test_data)
+#analyze_cluster_keywords(km.labels_, product_id_name_dic, user_product_dic, id_user_dic)
+analyze_clusters_product_count(km.labels_, user_product_dic, id_user_dic)
+
