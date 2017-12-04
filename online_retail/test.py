@@ -35,7 +35,7 @@ for line in open('online_retail_utf_tab.csv'):
 
 ####------------------- plot ----------------------
 ###from collections import Counter
-###import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 ###
 ###plot_data_all = Counter(product_per_user_li)
 ###plot_data_x = list(plot_data_all.keys())
@@ -146,8 +146,22 @@ def analyze_clusters_product_count(labels, user_product_dic, id_user_dic):
     print('cluster:', k)
     print(stats.describe(v))
 
-km=KMeans(n_clusters=2, n_init=10, max_iter=20)
-km.fit(test_data)
-#analyze_cluster_keywords(km.labels_, product_id_name_dic, user_product_dic, id_user_dic)
-analyze_clusters_product_count(km.labels_, user_product_dic, id_user_dic)
+###km=KMeans(n_clusters=2, n_init=10, max_iter=20)
+###km.fit(test_data)
+####analyze_cluster_keywords(km.labels_, product_id_name_dic, user_product_dic, id_user_dic)
+###analyze_clusters_product_count(km.labels_, user_product_dic, id_user_dic)
+
+from scipy.cluster.hierarchy import linkage
+from scipy.cluster.hierarchy import dendrogram
+
+row_clusters = linkage(test_data, method='complete', metric='euclidean')
+tmp_label=[]
+for i in range(len(id_user_dic)):
+  tmp_label.append(id_user_dic[i])
+
+row_denr = dendrogram(row_clusters, labels=tmp_label)
+plt.tight_layout()
+plt.ylabel('euclid')
+plt.show()
+
 
